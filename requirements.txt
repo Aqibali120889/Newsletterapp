@@ -1,0 +1,20 @@
+# Dev environment
+pip
+autopep8
+# App
+flask
+fastapi>=0.95.0
+uvicorn>=0.21.0
+langchain>=0.0.267
+langchain-community
+langchain-huggingface
+duckduckgo-search # Added for DuckDuckGo search tool
+huggingface-hub>=0.16.4
+firebase-admin>=6.2.0
+python-dotenv>=1.0.0
+# google-search-results>=2.4.2 # No longer needed if using DDG
+aiohttp>=3.8.4
+beautifulsoup4>=4.12.2
+pydantic>=2.0.0
+transformers
+torch

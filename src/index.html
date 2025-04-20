@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsletter Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #333333;
+            --text-light: #6c757d;
+            --success: #4ade80;
+            --error: #ef4444;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: inline-block;
+        }
+
+        .app-title::after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 4px;
+            bottom: -8px;
+            left: 25%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 2px;
+        }
+
+        .app-subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            background-color: #f8fafc;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            background-image: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 6px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            background-image: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+
+        .btn-submit:hover {
+            background-image: linear-gradient(to right, var(--primary-dark), var(--secondary));
+        }
+
+        .result-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-top: 2rem;
+            overflow: hidden;
+            transform: scale(0.95);
+            opacity: 0;
+            max-height: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .result-card.show {
+            transform: scale(1);
+            opacity: 1;
+            max-height: 2000px;
+        }
+
+        .result-header {
+            background-image: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .result-content {
+            padding: 1.5rem;
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+
+        .loading-animation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spinner 1s linear infinite;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes spinner {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(67, 97, 238, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
+            }
+        }
+
+        .loading-text {
+            color: var(--text-light);
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        .error-message {
+            color: var(--error);
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--error);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        .success-message {
+            color: var(--success);
+            background-color: rgba(74, 222, 128, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--card-bg);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            z-index: 100;
+        }
+
+        /* Theme toggle icon */
+        .theme-toggle i {
+            font-size: 1.25rem;
+            color: var(--text);
+        }
+
+        /* Dark theme styles */
+        body.dark-theme {
+            --background: #121212;
+            --card-bg: #1e1e1e;
+            --text: #e0e0e0;
+            --text-light: #a0a0a0;
+            background-image: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        }
+
+        body.dark-theme .form-input {
+            background-color: #2d3436;
+            border-color: #4a5568;
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .btn-submit {
+            background-image: linear-gradient(to right, #4361ee, #7209b7);
+        }
+
+        /* Feature Pills */
+        .feature-pills {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .feature-pill {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-pill i {
+            font-size: 1rem;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .app-title {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .feature-pills {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Modern tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Advanced generated content styling */
+        .content-preview {
+            font-family: 'Georgia', serif;
+            max-height: 400px;
+            overflow-y: auto;
+            position: relative;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+        }
+
+        .content-preview h1, .content-preview h2, .content-preview h3 {
+            color: var(--primary);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-preview p {
+            margin-bottom: 1rem;
+        }
+
+        .content-preview ul, .content-preview ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            z-index: 100;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--success);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" id="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <div class="container">
+        <header class="app-header">
+            <h1 class="app-title animate__animated animate__fadeInDown">Newsletter Generator</h1>
+            <p class="app-subtitle animate__animated animate__fadeInUp animate__delay-1s">Create professional newsletters in seconds with AI</p>
+        </header>
+
+        <div class="feature-pills animate__animated animate__fadeIn animate__delay-1s">
+            <div class="feature-pill">
+                <i class="fas fa-bolt"></i>
+                <span>Fast Generation</span>
+            </div>
+            <div class="feature-pill">
+                <i class="fas fa-sparkles"></i>
+                <span>AI-Powered</span>
+            </div>
+            <div class="feature-pill">
+                <i class="fas fa-newspaper"></i>
+                <span>Professional Format</span>
+            </div>
+            <div class="feature-pill">
+                <i class="fas fa-download"></i>
+                <span>Easy Export</span>
+            </div>
+        </div>
+
+        <div class="card animate__animated animate__fadeInUp animate__delay-1s" id="input-card">
+            <form id="newsletter-form">
+                <div class="form-group">
+                    <label for="topic" class="form-label">What's your newsletter about?</label>
+                    <input type="text" id="topic" name="topic" class="form-input" placeholder="Enter your newsletter topic (e.g., Sustainable Technology Trends)" required>
+                </div>
+                
+                <button type="submit" class="btn btn-submit pulse">
+                    <i class="fas fa-wand-magic-sparkles"></i> Generate Newsletter
+                </button>
+            </form>
+        </div>
+
+        <div class="result-card" id="result-area">
+            <div class="result-header">
+                <h2 class="result-title">Your Generated Newsletter</h2>
+                <div class="result-actions">
+                    <button class="action-btn tooltip" id="copy-btn">
+                        <i class="fas fa-copy"></i>
+                        <span class="tooltip-text">Copy to clipboard</span>
+                    </button>
+                    <button class="action-btn tooltip" id="download-btn">
+                        <i class="fas fa-download"></i>
+                        <span class="tooltip-text">Download as text</span>
+                    </button>
+                </div>
+            </div>
+            <div id="result-content-wrapper">
+                <div id="loading-animation" class="loading-animation" style="display: none;">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Creating your newsletter with AI magic... ✨</p>
+                </div>
+                <div class="result-content content-preview" id="content"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-top" id="scroll-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <div class="notification" id="notification">
+        <span id="notification-text"></span>
+    </div>
+
+    <script>
+        // Form submission and newsletter generation
+        const form = document.getElementById('newsletter-form');
+        const topicInput = document.getElementById('topic');
+        const resultArea = document.getElementById('result-area');
+        const contentArea = document.getElementById('content');
+        const loadingAnimation = document.getElementById('loading-animation');
+        const submitButton = form.querySelector('button');
+        const copyBtn = document.getElementById('copy-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const scrollTopBtn = document.getElementById('scroll-top');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            const icon = themeToggle.querySelector('i');
+            
+            if (document.body.classList.contains('dark-theme')) {
+                icon.className = 'fas fa-sun';
+            } else {
+                icon.className = 'fas fa-moon';
+            }
+        });
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            notificationText.textContent = message;
+            notification.style.backgroundColor = type === 'success' ? 'var(--success)' : 'var(--error)';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Copy to clipboard functionality
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(contentArea.textContent)
+                .then(() => {
+                    showNotification('Newsletter copied to clipboard!');
+                })
+                .catch(err => {
+                    showNotification('Failed to copy text.', 'error');
+                });
+        });
+
+        // Download as text functionality
+        downloadBtn.addEventListener('click', () => {
+            const content = contentArea.textContent;
+            const topic = topicInput.value.trim();
+            const filename = `${topic.toLowerCase().replace(/[^a-z0-9]/g, '-')}-newsletter.txt`;
+            
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            
+            showNotification('Newsletter downloaded!');
+        });
+
+        // Scroll to top button functionality
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Form submission
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const topic = topicInput.value.trim();
+            if (!topic) {
+                showNotification('Please enter a topic.', 'error');
+                return;
+            }
+
+            // Show loading animation and disable button
+            resultArea.classList.add('show');
+            contentArea.textContent = '';
+            loadingAnimation.style.display = 'flex';
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+            try {
+                // Make API call to the backend
+                const response = await fetch('/newsletter/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ topic: topic }),
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.detail || `HTTP error! status: ${response.status}`);
+                }
+
+                // Hide loading animation
+                loadingAnimation.style.display = 'none';
+                
+                // Display the generated content with animation
+                contentArea.textContent = '';
+                const newsletterContent = result.newsletter_content;
+                
+                // Animate typing effect for the content
+                let i = 0;
+                const typeSpeed = 5; // Reduced speed for faster typing
+                
+                function typeWriter() {
+                    if (i < newsletterContent.length) {
+                        contentArea.textContent += newsletterContent.charAt(i);
+                        i++;
+                        
+                        // Speed up typing by processing multiple characters at once
+                        if (i % 5 === 0) {
+                            contentArea.scrollTop = contentArea.scrollHeight;
+                        }
+                        
+                        setTimeout(typeWriter, typeSpeed);
+                    } else {
+                        // After typing is complete, format the content
+                        formatNewsletterContent();
+                    }
+                }
+                
+                typeWriter();
+
+            } catch (error) {
+                console.error('Error generating newsletter:', error);
+                loadingAnimation.style.display = 'none';
+                contentArea.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-circle"></i> Error: ${error.message}</div>`;
+                showNotification('Failed to generate newsletter.', 'error');
+            } finally {
+                // Re-enable button
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate Newsletter';
+            }
+        });
+
+        // Function to format newsletter content with some basic styling
+        function formatNewsletterContent() {
+            const content = contentArea.textContent;
+            
+            // Basic formatting - convert some markdown-like syntax to HTML
+            let formattedContent = content
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+                
+            // Convert plain text paragraphs to HTML paragraphs
+            let paragraphs = formattedContent.split(/\n\n+/);
+            formattedContent = paragraphs.map(p => {
+                // Skip if already HTML formatted
+                if (p.trim().startsWith('<')) return p;
+                return `<p>${p}</p>`;
+            }).join('');
+            
+            contentArea.innerHTML = formattedContent;
+            
+            showNotification('Newsletter generated successfully!');
+        }
+
+        // Add some animations to elements when they come into view
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.card, .result-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            elements.forEach(element => {
+                observer.observe(element);
+            });
+        }
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', animateOnScroll);
+    </script>
+</body>
+</html>
