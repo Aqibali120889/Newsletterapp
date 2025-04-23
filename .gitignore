@@ -11,3 +11,6 @@ hosting/node_modules
 
 # Ignore build artifacts
 hosting/dist
+
+# Virtual Environment
+.venv/
